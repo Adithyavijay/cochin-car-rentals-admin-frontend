@@ -22,10 +22,16 @@ interface Vehicle {
         id: string;
         name: string;
     };
-    price: number;
-    quantity: number;
+    dailyRate: number;
+    availableQuantity: number;
     primaryImage: string;
     otherImages: string[];
+    category: string;
+    description: string;
+    transmission: string;
+    seatingCapacity: number;
+    yearOfManufacture: number;
+    maintenanceStatus: string;
 }
 
 interface Manufacturer {
@@ -46,8 +52,14 @@ const EditVehicle: React.FC<EditVehicleProps> = ({ onClose, vehicle }) => {
         name: vehicle.name,
         manufacturerId: vehicle.manufacturer.id,
         modelId: vehicle.model.id,
-        price: vehicle.price.toString(),
-        quantity: vehicle.quantity.toString(),
+        dailyRate: vehicle.dailyRate.toString(),
+        availableQuantity: vehicle.availableQuantity.toString(),
+        category: vehicle.category,
+        description: vehicle.description,
+        transmission: vehicle.transmission,
+        seatingCapacity: vehicle.seatingCapacity.toString(),
+        yearOfManufacture: vehicle.yearOfManufacture.toString(),
+        maintenanceStatus: vehicle.maintenanceStatus,
     });
     const [primaryImage, setPrimaryImage] = useState<File | null>(null);
     const [otherImages, setOtherImages] = useState<FileList | null>(null);
@@ -71,9 +83,8 @@ const EditVehicle: React.FC<EditVehicleProps> = ({ onClose, vehicle }) => {
             setFilteredModels([]);
         }
     }, [formData.manufacturerId, modelsData]);
-    console.log(formData.name)
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => { 
-        
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
@@ -92,6 +103,7 @@ const EditVehicle: React.FC<EditVehicleProps> = ({ onClose, vehicle }) => {
             }
         }
     };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -101,8 +113,10 @@ const EditVehicle: React.FC<EditVehicleProps> = ({ onClose, vehicle }) => {
                     id: vehicle.id,
                     input: {
                         ...formData,
-                        price: parseFloat(formData.price),
-                        quantity: parseInt(formData.quantity),
+                        dailyRate: parseFloat(formData.dailyRate),
+                        availableQuantity: parseInt(formData.availableQuantity),
+                        seatingCapacity: parseInt(formData.seatingCapacity),
+                        yearOfManufacture: parseInt(formData.yearOfManufacture),
                         primaryImage,
                         otherImages: otherImages ? Array.from(otherImages) : [],
                     },
@@ -189,26 +203,109 @@ const EditVehicle: React.FC<EditVehicleProps> = ({ onClose, vehicle }) => {
                                     ))}
                                 </select>
                             </div>
+                            <InputField
+                                label="Daily Rate"
+                                type="number"
+                                name="dailyRate"
+                                value={formData.dailyRate}
+                                onChange={handleInputChange}
+                                placeholder="Enter daily rate"
+                            />
+                            <InputField
+                                label="Available Quantity"
+                                type="number"
+                                name="availableQuantity"
+                                value={formData.availableQuantity}
+                                onChange={handleInputChange}
+                                placeholder="Enter available quantity"
+                            />
                         </div>
 
                         {/* Right column */}
                         <div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Category
+                                </label>
+                                <select
+                                    name="category"
+                                    value={formData.category}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="ECONOMY">Economy</option>
+                                    <option value="COMPACT">Compact</option>
+                                    <option value="MIDSIZE">Midsize</option>
+                                    <option value="FULLSIZE">Fullsize</option>
+                                    <option value="LUXURY">Luxury</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="VAN">Van</option>
+                                    <option value="TRUCK">Truck</option>
+                                </select>
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Description
+                                </label>
+                                <textarea
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter vehicle description"
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                    rows={3}
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Transmission
+                                </label>
+                                <select
+                                    name="transmission"
+                                    value={formData.transmission}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                >
+                                    <option value="">Select Transmission</option>
+                                    <option value="MANUAL">Manual</option>
+                                    <option value="AUTOMATIC">Automatic</option>
+                                    <option value="SEMI_AUTOMATIC">Semi-Automatic</option>
+                                </select>
+                            </div>
                             <InputField
-                                label="Price"
+                                label="Seating Capacity"
                                 type="number"
-                                name="price"
-                                value={formData.price}
+                                name="seatingCapacity"
+                                value={formData.seatingCapacity}
                                 onChange={handleInputChange}
-                                placeholder="Enter price"
+                                placeholder="Enter seating capacity"
                             />
                             <InputField
-                                label="Quantity"
+                                label="Year of Manufacture"
                                 type="number"
-                                name="quantity"
-                                value={formData.quantity}
+                                name="yearOfManufacture"
+                                value={formData.yearOfManufacture}
                                 onChange={handleInputChange}
-                                placeholder="Enter quantity"
+                                placeholder="Enter year of manufacture"
                             />
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Maintenance Status
+                                </label>
+                                <select
+                                    name="maintenanceStatus"
+                                    value={formData.maintenanceStatus}
+                                    onChange={handleInputChange}
+                                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                                >
+                                    <option value="">Select Maintenance Status</option>
+                                    <option value="EXCELLENT">Excellent</option>
+                                    <option value="GOOD">Good</option>
+                                    <option value="NEEDS_SERVICE">Needs Service</option>
+                                    <option value="IN_MAINTENANCE">In Maintenance</option>
+                                </select>
+                            </div>
                         </div>
 
                         {/* Full width for file inputs */}

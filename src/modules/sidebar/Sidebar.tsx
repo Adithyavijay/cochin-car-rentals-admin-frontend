@@ -44,8 +44,8 @@ export default function Sidebar(): JSX.Element {
         >
           {isCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
         </button>
-        <div className={` ${isCollapsed ? '' : 'block'}  h-20  flex justify-start items-center`}>
-          <Image src='/icons/cochin-car-rentals.png' width={180} height={50} alt='company logo' className='hover:scale-105  transition-transform ease-out cursor-pointer'/>
+        <div className={` ${isCollapsed ? '' : 'block'}  h-20  flex justify-center items-center`}>
+          <Image src='/icons/carLogo.png' width={105} height={10} alt='company logo' className='hover:scale-105  transition-transform ease-out cursor-pointer'/>
         </div>
         <ul className="space-y-2">
         {menuItems.map((item) => (

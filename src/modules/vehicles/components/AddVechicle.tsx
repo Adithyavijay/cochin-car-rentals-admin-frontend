@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {  useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GET_ALL_MANUFACTURERS, GET_ALL_MODELS } from '@/graphql/queries';
 import { addVehicle } from '../services/services';
 import InputField from './InputField';
-
+import { MaintenanceStatus,FuelType,TransmissionType,VehicleCategory } from '../types/types';
 
 interface AddVehicleProps {
   onClose: () => void;
@@ -14,6 +14,7 @@ interface Manufacturer {
   id: string;
   name: string;
 }
+
 interface Model {
   id: string;
   name: string;
@@ -28,12 +29,19 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose }) => {
   const [name, setName] = useState('');
   const [manufacturerId, setManufacturerId] = useState('');
   const [modelId, setModelId] = useState('');
-  const [price, setPrice] = useState('');
-  const [quantity, setQuantity] = useState('');
+  const [dailyRate, setDailyRate] = useState('');
+  const [availableQuantity, setAvailableQuantity] = useState('');
   const [primaryImage, setPrimaryImage] = useState<File | undefined>(undefined);
-  const [otherImages, setOtherImages] = useState<FileList | null>(null); 
-  const { data: manufacturersData } = useQuery<{ getAllManufacturers : Manufacturer[]} >(GET_ALL_MANUFACTURERS);
-  const { data: modelsData } = useQuery<{getAllModels : Model[]}>(GET_ALL_MODELS);
+  const [otherImages, setOtherImages] = useState<FileList | null>(null);
+  const [category, setCategory] = useState<VehicleCategory>(VehicleCategory.ECONOMY);
+  const [description, setDescription] = useState('');
+  const [transmission, setTransmission] = useState<TransmissionType>(TransmissionType.AUTOMATIC);
+  const [seatingCapacity, setSeatingCapacity] = useState('');
+  const [yearOfManufacture, setYearOfManufacture] = useState('');
+  const [maintenanceStatus, setMaintenanceStatus] = useState<MaintenanceStatus>(MaintenanceStatus.EXCELLENT);
+  const [fuelType , setFuelType]= useState<FuelType>(FuelType.PETROL)
+  const { data: manufacturersData } = useQuery<{ getAllManufacturers: Manufacturer[] }>(GET_ALL_MANUFACTURERS);
+  const { data: modelsData } = useQuery<{ getAllModels: Model[] }>(GET_ALL_MODELS);
 
   const [filteredModels, setFilteredModels] = useState<{ id: string; name: string }[]>([]);
 
@@ -49,26 +57,39 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose }) => {
     e.preventDefault();
     
     try {
-      const data = await addVehicle({
+        await addVehicle({
         name,
         manufacturerId,
         modelId,
-        price: parseFloat(price),
-        quantity: parseInt(quantity),
+        dailyRate: parseFloat(dailyRate),
+        availableQuantity: parseInt(availableQuantity),
         primaryImage,
-        otherImages: otherImages ? Array.from(otherImages) : []
-      });
-      console.log('Vehicle added:', data.addVehicle);
+        otherImages: otherImages ? Array.from(otherImages) : [],
+        category,
+        description,
+        transmission,
+        seatingCapacity: parseInt(seatingCapacity),
+        yearOfManufacture: parseInt(yearOfManufacture),
+        maintenanceStatus ,
+        fuelType 
+      }); 
       onClose();
     } catch (error) {
       console.error('Error adding vehicle:', error);
     }
   };
 
+  // Function to format enum values for display
+  const formatEnumValue = (value: string) => {
+    return value.split('_').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join(' ');
+  };
+
   return (
     <AnimatePresence>
       <motion.div 
-        className="fixed md:py-10 inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-lg gradien overflow-y-auto h-full w-full flex items-center justify-center"
+        className="fixed md:py-10 inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-lg overflow-y-auto h-full w-full flex items-center justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -100,12 +121,65 @@ const AddVehicle: React.FC<AddVehicleProps> = ({ onClose }) => {
                 onChange={(e) => setModelId(e.target.value)} 
                 options={filteredModels}
               />
+              <InputField label="Daily Rate" type="number" value={dailyRate} onChange={(e) => setDailyRate(e.target.value)} />
+              <InputField label="Available Quantity" type="number" value={availableQuantity} onChange={(e) => setAvailableQuantity(e.target.value)} />
+              <InputField 
+                label="Category" 
+                type="select" 
+                value={category} 
+                onChange={(e) => setCategory(e.target.value as VehicleCategory)} 
+                options={Object.values(VehicleCategory).map(value => ({ 
+                  id: value, 
+                  name: formatEnumValue(value)
+                }))}
+              />
             </div>
             
             {/* Right column */}
             <div>
-              <InputField label="Price" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
-              <InputField label="Quantity" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+              <InputField 
+                label="Transmission" 
+                type="select" 
+                value={transmission} 
+                onChange={(e) => setTransmission(e.target.value as TransmissionType)} 
+                options={Object.values(TransmissionType).map(value => ({ 
+                  id: value, 
+                  name: formatEnumValue(value)
+                }))}
+              />
+              <InputField label="Seating Capacity" type="number" value={seatingCapacity} onChange={(e) => setSeatingCapacity(e.target.value)} />
+              <InputField label="Year of Manufacture" type="number" value={yearOfManufacture} onChange={(e) => setYearOfManufacture(e.target.value)} />
+              <InputField 
+                label="Maintenance Status" 
+                type="select" 
+                value={maintenanceStatus} 
+                onChange={(e) => setMaintenanceStatus(e.target.value as MaintenanceStatus)} 
+                options={Object.values(MaintenanceStatus).map(value => ({ 
+                  id: value, 
+                  name: formatEnumValue(value)
+                }))}
+              />
+              <InputField 
+                label="Fuel Type" 
+                type="select" 
+                value={fuelType} 
+                onChange={(e) => setFuelType(e.target.value as FuelType)} 
+                options={Object.values(FuelType).map(value => ({ 
+                  id: value, 
+                  name: formatEnumValue(value)
+                }))}
+              />
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                  rows={3}
+                />
+              </div>
             </div>
             
             {/* Full width for file inputs */}

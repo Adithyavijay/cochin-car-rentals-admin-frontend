@@ -13,36 +13,51 @@
         id
         name
       }
-      price
-      quantity
+      dailyRate
+      availableQuantity
       primaryImage
       otherImages
+      category
+      description
+      transmission
+      seatingCapacity
+      yearOfManufacture
+      maintenanceStatus
+      fuelType
     }
   }
 `;
-  export const UPDATE_VEHICLE = gql`
-    mutation UpdateVehicle($id: ID!, $input: VehicleUpdateInput!) {
-      updateVehicle(id: $id, input: $input) {
+
+export const UPDATE_VEHICLE = gql`
+  mutation UpdateVehicle($id: ID!, $input: VehicleUpdateInput!) {
+    updateVehicle(id: $id, input: $input) {
+      id
+      name
+      manufacturer {
         id
         name
-        manufacturer {
-          id
-          name
-        }
-        model { 
-          id 
-          name
-        }
-        price
-        quantity
-        primaryImage
-        otherImages
       }
+      model {
+        id
+        name
+      }
+      dailyRate
+      availableQuantity
+      primaryImage
+      otherImages
+      category
+      description
+      transmission
+      seatingCapacity
+      yearOfManufacture
+      maintenanceStatus
+      fuelType
     }
-  `;
+  }
+`;
 
-  export const DELETE_VEHICLE = gql`
-   mutation DeleteVehicle($id: ID!) {
+export const DELETE_VEHICLE = gql`
+  mutation DeleteVehicle($id: ID!) {
     deleteVehicle(id: $id) {
       id
       name
@@ -54,13 +69,19 @@
         id
         name
       }
-      price
-      quantity
+      dailyRate
+      availableQuantity
       primaryImage
       otherImages
+      category
+      description
+      transmission
+      seatingCapacity
+      yearOfManufacture
+      maintenanceStatus
     }
   }
-  `;
+`;
 
   
 export const ADD_MANUFACTURER = gql`
@@ -118,6 +139,17 @@ export const DELETE_MODEL = gql`
   mutation DeleteModel($id: ID!) {
     deleteModel(id: $id) {
       id
+    }
+  }
+`; 
+
+
+export const IMPORT_VEHICLES = gql`
+  mutation ImportVehicles($file: Upload!) {
+    importVehicles(file: $file) {
+      success
+      message
+      importedCount
     }
   }
 `;

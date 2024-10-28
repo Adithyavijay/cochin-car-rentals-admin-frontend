@@ -1,16 +1,24 @@
 import client from '@/lib/apolloClient'
 import { ADD_VEHICLE, GET_ALL_VEHICLES } from '@/graphql'; 
+import { MaintenanceStatus,TransmissionType,VehicleCategory,FuelType } from '../types/types';
 
 interface AddVehicleInput {
-    name: string;
-    manufacturerId: string;
-    modelId: string;
-    price: number;
-    quantity: number;
-    primaryImage: File | undefined;
-    otherImages: File[];
-  }
-  
+  name: string;
+  manufacturerId: string;
+  modelId: string;
+  dailyRate: number;
+  availableQuantity: number;
+  primaryImage?: File;
+  otherImages?: File[];
+  category: VehicleCategory;
+  description: string;
+  transmission: TransmissionType;
+  seatingCapacity: number;
+  yearOfManufacture: number;
+  maintenanceStatus: MaintenanceStatus;
+  fuelType : FuelType ;
+}
+
   
   export const  addVehicle = async (input: AddVehicleInput) => {
     try {
